@@ -1,17 +1,15 @@
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKFold
-from sklearn.neural_network import MLPClassifier
+from sklearn.neighbors import KNeighborsClassifier
 from category_encoders import TargetEncoder
 from sklearn.metrics import accuracy_score, classification_report
 import unidecode
 import numpy as np
 import matplotlib.pyplot as plt
 from imblearn.over_sampling import SMOTE
-import os 
 
 # Carregar o arquivo .ods
-output_directoryCSV = "./Descubra seu estilo de aprendizagem.ods" 
 file_path = 'Descubra seu estilo de aprendizagem.ods'
 data = pd.read_excel(file_path, engine='odf')
 
@@ -33,22 +31,18 @@ alternativas_perfil = {
     "Somente tomo a decisão após analisar o assunto em detalhes.": "Digital",
     "Sempre sigo minha intuição e meus instintos.": "Cinestésico",
     "Procuro seguir pelo caminho que me parece melhor.": "Visual",
-    
     "Vou falar de assuntos importantes ressaltando o que é importante.": "Digital",
     "Vou mexer no aplicativo de áudio ou música.": "Auditivo",
     "Vou escolher materiais confortáveis ou ergonômicos.": "Cinestésico",
     "Vou trabalhar com cores. Sei combinar bem as cores": "Visual",
-    
     "A disposição dos móveis e seus formatos.": "Digital",
     "A textura das superfícies.": "Cinestésico",
     "As combinações de cores e intensidade da iluminação.": "Visual",
     "O som ambiente, o barulho dos equipamentos e as vozes ao redor.": "Auditivo",
-    
     "Gosto de perguntar a opinião das pessoas sobre algum produto.": "Auditivo",
     "Procuro pegar no produto, sentir o peso, sentir sua forma.": "Cinestésico",
     "Sempre pego primeiro aqueles que me chamam mais a atenção.": "Visual",
     "Leio os rótulos, vejo as especificações, data de validade.": "Digital",
-    
     "Uma rede de dormir confortável e um bom chinelo.": "Cinestésico",
     "Um binóculo e um óculos de sol.": "Visual",
     "Um MP3 com minhas músicas preferidas.": "Auditivo",
@@ -89,45 +83,44 @@ y = data['perfil_encoded']
 # Dividir em conjuntos de treino e teste
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Inicializar o OneHotEncoder e o escalador
-encoder = OneHotEncoder(sparse_output=False, handle_unknown="ignore")
+# Inicializar o TargetEncoder e o StandardScaler
+encoder = TargetEncoder()
 scaler = StandardScaler()
-# Aplicar SMOTE
+
+# Aplicar o encoder e o escalador aos dados de treino
+X_train_encoded = encoder.fit_transform(X_train, y_train)
+X_train_encoded_scaled = scaler.fit_transform(X_train_encoded)
+
+# Transformar o conjunto de teste
+X_test_encoded = encoder.transform(X_test)
+X_test_encoded_scaled = scaler.transform(X_test_encoded)
+
+# Aplicar o SMOTE para lidar com o desbalanceamento
 smote = SMOTE(k_neighbors=1)
+X_resampled, y_resampled = smote.fit_resample(X_train_encoded_scaled, y_train)
 
-
-# Aplicando o One-Hot Encoding nas colunas de texto em X_train e escalando
-X_encoded_train = encoder.fit_transform(X_train.select_dtypes(include=['object']))
-X_train_transformed = scaler.fit_transform(np.concatenate([X_train.select_dtypes(exclude=['object']).values, X_encoded_train], axis=1))
-X_resampled, y_resampled = smote.fit_resample(X_train_transformed, y_train)
-
-# Definir a grade de hiperparâmetros para o GridSearchCV
+# Definir a grade de hiperparâmetros para o GridSearchCV do kNN
 param_grid = {
-    'hidden_layer_sizes': [(100,100), (100,)],
-    'activation': ['relu', 'tanh'],
-    'solver': ['adam', 'sgd'],
-    'learning_rate': ['constant', 'adaptive']
+    'n_neighbors': [3, 5, 7, 9],
+    'weights': ['uniform', 'distance'],
+    'metric': ['euclidean', 'manhattan']
 }
 
-# Inicializar o modelo MLPClassifier
-mlp = MLPClassifier(random_state=42, max_iter=500)
+# Inicializar o modelo KNeighborsClassifier
+knn = KNeighborsClassifier()
 
 # Configurar e aplicar o GridSearchCV com K-Fold Cross-Validation
-k = 5  # Você pode ajustar para k=5, k=10 ou outro valor
+k = 5  # Usar k-fold cross-validation com k=5
 kf = StratifiedKFold(n_splits=k)
-grid_search = GridSearchCV(estimator=mlp, param_grid=param_grid, scoring='accuracy', cv=kf, n_jobs=-1)
+grid_search = GridSearchCV(estimator=knn, param_grid=param_grid, scoring='accuracy', cv=kf, n_jobs=-1)
 grid_search.fit(X_resampled, y_resampled)
 
 # Treinar o melhor modelo encontrado
 best_model = grid_search.best_estimator_
 best_model.fit(X_resampled, y_resampled)
 
-# Aplicando o One-Hot Encoding e escalando nas colunas de texto em X_test
-X_encoded_test = encoder.transform(X_test.select_dtypes(include=['object']))
-X_test_transformed = scaler.transform(np.concatenate([X_test.select_dtypes(exclude=['object']).values, X_encoded_test], axis=1))
-
 # Fazer previsões e avaliar o modelo
-y_pred = best_model.predict(X_test_transformed)
+y_pred = best_model.predict(X_test_encoded_scaled)
 print("Acurácia:", accuracy_score(y_test, y_pred))
 
 # Gerar o relatório de classificação incluindo todas as classes
