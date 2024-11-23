@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linha do Tempo - Wissen</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f9;
+            margin: 20px;
+            color: #333;
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background-color: #007bff;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin: 20px 0;
+            width: 50%;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .timeline-item:hover {
+            background-color: #e9ecef;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .timeline-item.left {
+            left: 0;
+        }
+
+        .timeline-item.right {
+            left: 50%;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #007bff;
+            border-radius: 50%;
+            top: 20px;
+            right: -10px;
+            z-index: 1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-item.left::before {
+            left: -10px;
+        }
+
+        .timeline-item-content {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+        }
+
+        .timeline-item-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .timeline-item h3 {
+            font-size: 1.5rem;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .timeline-item ul {
+            padding-left: 20px;
+        }
+
+        .timeline-item li {
+            margin-bottom: 10px;
+        }
+
+        .shadow-box {
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+        .timeline-item-content {
+            position: relative;
+        }
+
+        /* Estilo para a bolinha ao lado de cada item da lista */
+        .timeline-item-content::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -20px; /* Ajuste a posição horizontal da bolinha */
+            transform: translateY(-50%);
+            width: 15px; /* Tamanho da bolinha */
+            height: 15px; /* Tamanho da bolinha */
+            background-color: #007bff; /* Cor azul da bolinha */
+            border-radius: 50%; /* Deixa a bolinha redonda */
+            border: 2px solid #ffffff; /* Contorno branco ao redor da bolinha */
+        }
+
+        /* Remove a bolinha padrão do <ul> */
+        ul {
+            list-style-type: none; /* Remove a bolinha padrão */
+            padding-left: 0; /* Remove o recuo à esquerda */
+        }
+
+        .container {
+            background-color: white;  /* Cor de fundo branca */
+            padding: 30px;            /* Espaçamento interno */
+            border-radius: 15px;      /* Bordas arredondadas */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);  /* Sombra suave */
+        }
+
+        .justified {
+            text-align: justify;  /* Justifica o texto */
+            text-align-last: left; /* Mantém o último parágrafo alinhado à esquerda */
+        }
+        .roboto-thin {
+            font-family: "Roboto", sans-serif;
+            font-weight: 100;
+            font-style: normal;
+        }
+
+        .roboto-light {
+            font-family: "Roboto", sans-serif;
+            font-weight: 300;
+            font-style: normal;
+        }
+
+        .roboto-bold {
+            font-family: "Roboto", sans-serif;
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        .roboto-medium {
+            font-family: "Roboto", sans-serif;
+            font-weight: 500;
+            font-style: normal;
+        }
+
+
+
+
+    </style>
+</head>
+<body>
+    <div class="container mb-3">
+        <h1 class="text-center roboto-medium ">Linha do tempo do desenvolvimento de modelos de RNA</h1>
+        <p class="text-center text-muted ">A jornada para construir um modelo de classificação.</p>
+    </div>
+
+    <div class="container">
+        <h2 class="text-center">Sintaxe dos Passos</h2>
+    
+        <p class=" text-muted justified">
+            <strong>O objetivo deste trabalho </strong> é desenvolver um modelo de rede neural capaz de classificar os perfis de aprendizagem em quatro categorias: Visual, Auditivo, Cinestésico e Digital. O resultado dessa classificação será utilizado para ajustar os conteúdos e abordagens de ensino de acordo com o perfil do aluno identificado.
+        </p>
+    
+        <p class=" text-muted justified">
+            Além disso, estão sendo implementados modelos GPT com a função de auxiliar professores e monitores na geração de conceitos e exercícios personalizados para os alunos cadastrados em suas respectivas turmas. O objetivo é proporcionar uma experiência de aprendizagem mais dinâmica e alinhada ao estilo de cada estudante.
+        </p>
+        <p class=" text-muted justified">
+           Abaixo segue uma linha do tempo, onde é mostrado todos os passos 
+        </p>
+    </div>
+    
+        <div class="timeline">
+            <!-- Outubro de 2024 -->
+            <div class="timeline-item left">
+                <h3>Outubro de 2024</h3>
+                <ul>
+                    <li>
+                        <div class="timeline-item-content shadow-box">
+                            <p>Criamos um formulário para coletar perfis de aprendizagem.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="timeline-item-content shadow-box">
+                            <p>Implementamos critérios para classificar os perfis em Visual, Auditivo, Cinestésico e Digital.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="timeline-item-content shadow-box">
+                            <p>Desenvolvemos scripts para automatizar o processo em Python.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        
+            <!-- Novembro de 2024 -->
+            <div class="timeline-item right">
+                <h3>Novembro de 2024</h3>
+                <ul>
+                    <li>
+                        <div class="timeline-item-content shadow-box">
+                            <p>Usamos k-NN como primeiro modelo para realizar as classificações dos prefis.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="timeline-item-content shadow-box">
+                            <p>  Para a classificação dos perfis de aprendizagem, também foi utilizado o modelo de rede neural <strong>MLP (Multi-Layer Perceptron)</strong>, que demonstrou ser eficaz ao combinar múltiplas camadas de processamento para analisar e classificar os dados com alta precisão.
+                            </p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="timeline-item-content shadow-box">
+                            <p>Testamos diferentes técnicas de normalização, optando pelo StandardScaler.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="timeline-item-content shadow-box">
+                            <p>Ajustamos os dados para otimizar o desempenho dos modelos.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        
+            <!-- Meados de Novembro de 2024 -->
+            <div class="timeline-item left">
+                <h3>Meados de Novembro de 2024</h3>
+                <ul>
+                    <li>
+                        <div class="timeline-item-content shadow-box">
+                            <p>Com 47 amostras, utilizamos GANs para gerar dados sintéticos.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="timeline-item-content shadow-box">
+                            <p><strong>GANs (Redes Generativas Adversariais)</strong> são modelos de aprendizado de máquina compostos por duas redes neurais que competem entre si: uma geradora, que cria dados falsos, e uma discriminadora, que tenta identificar se os dados são reais ou falsos. No nosso caso, utilizamos GANs para gerar dados sintéticos, ajudando a aumentar o tamanho do conjunto de dados disponível.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="timeline-item-content shadow-box">
+                            <p>Obtivemos uma acurácia de 99,39% em uma MLP treinada com os dados gerados.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        
+            <!-- Final de Novembro de 2024 -->
+            <div class="timeline-item right">
+                <h3>Final de Novembro de 2024</h3>
+                <ul>
+                    <li>
+                        <div class="timeline-item-content shadow-box">
+                            <p>Exploramos modelos generativos como GPT-J e Falcon-7B.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="timeline-item-content shadow-box">
+                            <p>Superamos problemas de hardware e ajustes no tokenizador.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="timeline-item-content shadow-box">
+                            <p>Testamos a viabilidade para geração de conteúdo educacional.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        
+            <!-- Status Atual -->
+            <div class="timeline-item left">
+                <h3>Status Atual</h3>
+                <ul>
+                    <li>
+                        <div class="timeline-item-content shadow-box">
+                            <p>Integração de GPTs para personalizar conteúdos teóricos e exercícios.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="timeline-item-content shadow-box">
+                            <p>Foco em aprendizagem adaptativa na plataforma Wissen.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+
+    <footer class="text-center">
+        <p>© 2024 Wissen. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
