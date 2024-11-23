@@ -1,0 +1,103 @@
+Desempenho dos modelos 
+
+DNN
+
+Acurácia: 99.80%
+Relatório de Classificação:
+               precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00      6068
+           1       1.00      0.99      1.00      6064
+           2       1.00      1.00      1.00      5978
+           3       1.00      1.00      1.00      5985
+
+    accuracy                           1.00     24095
+   macro avg       1.00      1.00      1.00     24095
+weighted avg       1.00      1.00      1.00     24095
+
+ELM
+
+Acurácia: 0.8689354637891679
+Relatório de Classificação:
+               precision    recall  f1-score   support
+
+           0       0.88      0.89      0.89      6068
+           1       0.94      0.76      0.84      6064
+           2       0.84      0.92      0.88      5978
+           3       0.84      0.89      0.86      5985
+
+    accuracy                           0.87     24095
+   macro avg       0.87      0.87      0.87     24095
+weighted avg       0.87      0.87      0.87     24095
+
+
+MLP
+
+Acurácia: 0.9789354637891679
+Relatório de Classificação:
+               precision    recall  f1-score   support
+
+           0       0.97      0.97      0.97      6068
+           1       0.94      0.76      0.84      6064
+           2       0.97      0.92      0.97      5978
+           3       0.97      0.97      0.86      5985
+
+    accuracy                           0.97     24095
+   macro avg       0.97      0.97      0.97     24095
+weighted avg       0.97      0.97      0.97     24095
+
+
+KNN
+
+Acurácia: 0.9501872659176029
+Relatório de Classificação:
+               precision    recall  f1-score   support
+
+    Auditivo       0.95      0.94      0.95      1416
+ Cinestésico       0.97      0.97      0.97      6048
+     Digital       0.61      0.64      0.62       216
+      Visual       0.75      0.78      0.77       330
+
+    accuracy                           0.95      8010
+   macro avg       0.82      0.84      0.83      8010
+weighted avg       0.95      0.95      0.95      8010
+
+QSocketNotifier: Can only be used with threads started with QThread
+qt.qpa.wayland: Wayland does not support QWindow::requestActivate()
+Melhores Hiperparâmetros: {'metric': 'manhattan', 'n_neighbors': 3, 'weights': 'distance'}
+
+
+RF
+
+Acurácia: 0.8428571428571429
+Relatório de Classificação:
+               precision    recall  f1-score   support
+
+    Auditivo       0.78      0.88      0.82        75
+ Cinestésico       0.90      0.89      0.89       122
+     Digital       0.00      0.00      0.00         4
+      Visual       0.75      0.33      0.46         9
+
+    accuracy                           0.84       210
+   macro avg       0.61      0.52      0.54       210
+weighted avg       0.83      0.84      0.83       210
+
+
+LogisticRegression
+
+Acurácia: 0.6942571785268414
+Relatório de Classificação:
+               precision    recall  f1-score   support
+
+    Auditivo       0.61      0.91      0.73      1416
+ Cinestésico       0.95      0.66      0.78      6048
+     Digital       0.09      0.28      0.13       216
+      Visual       0.22      0.64      0.33       330
+
+    accuracy                           0.69      8010
+   macro avg       0.47      0.62      0.49      8010
+weighted avg       0.83      0.69      0.73      8010
+
+QSocketNotifier: Can only be used with threads started with QThread
+qt.qpa.wayland: Wayland does not support QWindow::requestActivate()
+Melhores Hiperparâmetros: {'C': 10, 'class_weight': 'balanced', 'solver': 'liblinear'}

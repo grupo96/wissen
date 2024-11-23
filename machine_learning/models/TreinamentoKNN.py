@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from imblearn.over_sampling import SMOTE
 
 # Carregar o arquivo .ods
-file_path = 'Descubra seu estilo de aprendizagem.ods'
+file_path = 'dados_ampliados_textuais_combinados.ods'
 data = pd.read_excel(file_path, engine='odf')
 
 # Remover acentos, substituir espaços por underscore, converter para minúsculas e remover ':' no final das colunas

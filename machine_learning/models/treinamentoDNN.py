@@ -1,17 +1,15 @@
-import pandas as pd
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
-from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKFold
-from sklearn.neural_network import MLPClassifier
-from category_encoders import TargetEncoder
+from tensorflow.keras.models import Sequential # type: ignore
+from tensorflow.keras.layers import Dense, Dropout # type: ignore
+from tensorflow.keras.utils import to_categorical # type: ignore
+from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
-import unidecode
-import numpy as np
-import matplotlib.pyplot as plt
 from imblearn.over_sampling import SMOTE
-import os 
+import numpy as np
+import pandas as pd
+import unidecode
 
 # Carregar o arquivo .ods
-output_directoryCSV = "./dados_ampliados_textuais_combinados.ods" 
 file_path = 'dados_ampliados_textuais_combinados.ods'
 data = pd.read_excel(file_path, engine='odf')
 
@@ -76,7 +74,6 @@ def calcular_perfil(row):
 
 # Aplicar a função para calcular o perfil em cada linha
 data['perfil'] = data[colunas_respostas].apply(calcular_perfil, axis=1)
-print("Dataset com coluna de perfil:\n", data[['perfil']])
 
 # Codificar o perfil para o modelo
 label_encoder = LabelEncoder()
@@ -89,61 +86,43 @@ y = data['perfil_encoded']
 # Dividir em conjuntos de treino e teste
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Inicializar o OneHotEncoder e o escalador
+# Pré-processamento (codificação e normalização)
 encoder = OneHotEncoder(sparse_output=False, handle_unknown="ignore")
 scaler = StandardScaler()
-# Aplicar SMOTE
+
+X_encoded = encoder.fit_transform(X.select_dtypes(include=['object']))
+X_transformed = scaler.fit_transform(np.concatenate([X.select_dtypes(exclude=['object']).values, X_encoded], axis=1))
+
+# Balanceamento com SMOTE
 smote = SMOTE(k_neighbors=1)
+X_resampled, y_resampled = smote.fit_resample(X_transformed, y)
 
+# Dividir em conjuntos de treino e teste novamente
+X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.2, random_state=42)
 
-# Aplicando o One-Hot Encoding nas colunas de texto em X_train e escalando
-X_encoded_train = encoder.fit_transform(X_train.select_dtypes(include=['object']))
-X_train_transformed = scaler.fit_transform(np.concatenate([X_train.select_dtypes(exclude=['object']).values, X_encoded_train], axis=1))
-X_resampled, y_resampled = smote.fit_resample(X_train_transformed, y_train)
+# Codificar rótulos como one-hot para o modelo DNN
+y_train_encoded = to_categorical(y_train)
+y_test_encoded = to_categorical(y_test)
 
-# Definir a grade de hiperparâmetros para o GridSearchCV
-param_grid = {
-    'hidden_layer_sizes': [(100,100), (100,)],
-    'activation': ['relu', 'tanh'],
-    'solver': ['adam', 'sgd'],
-    'learning_rate': ['constant', 'adaptive']
-}
+# Construir o modelo DNN
+model = Sequential([
+    Dense(128, input_dim=X_train.shape[1], activation='relu'),
+    Dropout(0.2),
+    Dense(64, activation='relu'),
+    Dropout(0.2),
+    Dense(y_train_encoded.shape[1], activation='softmax')  # Saída para classificação multi-classe
+])
 
-# Inicializar o modelo MLPClassifier
-mlp = MLPClassifier(random_state=42, max_iter=500)
+# Compilar o modelo
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-# Configurar e aplicar o GridSearchCV com K-Fold Cross-Validation
-k = 5  # Você pode ajustar para k=5, k=10 ou outro valor
-kf = StratifiedKFold(n_splits=k)
-grid_search = GridSearchCV(estimator=mlp, param_grid=param_grid, scoring='accuracy', cv=kf, n_jobs=-1)
-grid_search.fit(X_resampled, y_resampled)
+# Treinar o modelo
+model.fit(X_train, y_train_encoded, epochs=50, batch_size=32, validation_split=0.2, verbose=1)
 
-# Treinar o melhor modelo encontrado
-best_model = grid_search.best_estimator_
-best_model.fit(X_resampled, y_resampled)
+# Avaliar o modelo
+loss, accuracy = model.evaluate(X_test, y_test_encoded, verbose=0)
+y_pred = np.argmax(model.predict(X_test), axis=1)
 
-# Aplicando o One-Hot Encoding e escalando nas colunas de texto em X_test
-X_encoded_test = encoder.transform(X_test.select_dtypes(include=['object']))
-X_test_transformed = scaler.transform(np.concatenate([X_test.select_dtypes(exclude=['object']).values, X_encoded_test], axis=1))
-
-# Fazer previsões e avaliar o modelo
-y_pred = best_model.predict(X_test_transformed)
-print("Acurácia:", accuracy_score(y_test, y_pred))
-
-# Gerar o relatório de classificação incluindo todas as classes
-print("Relatório de Classificação:\n", classification_report(
-    y_test, y_pred, target_names=label_encoder.classes_, labels=np.unique(y_test)
-))
-
-# Contagem dos perfis para gráfico de pizza
-perfil_counts = data['perfil'].value_counts()
-labels = perfil_counts.index
-sizes = perfil_counts.values
-
-# Plotar gráfico de pizza
-plt.figure(figsize=(8, 8))
-plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
-plt.title('Distribuição de Perfis de Aprendizagem')
-plt.show()
-
-print("Melhores Hiperparâmetros:", grid_search.best_params_)
+print(f"Acurácia: {accuracy * 100:.2f}%")
+print("Relatório de Classificação:\n", classification_report(y_test, y_pred))
+model.save('modelo_dnn_otimizado.h5')
