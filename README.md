@@ -211,21 +211,11 @@ Três modelos principais foram utilizados para classificar os perfis:
 
 ---
 
-### **5.2 Abordagens de Recomendação**
+### **5.2 Abordagem de Recomendação**
 
 #### **5.2.1 Filtragem Baseada em Conteúdo**
 
 Recomenda conteúdos com base na similaridade entre as tags dos conteúdos e o perfil do aluno.
-
-#### **5.2.2 Filtragem Colaborativa**
-
-Utiliza interações passadas de outros alunos com perfis semelhantes para gerar recomendações.
-
-#### **5.2.3 Sistema Híbrido**
-
-Combina ambas as abordagens para melhorar a diversidade e relevância das recomendações.
-
----
 
 # Desenvovimento do projeto Wissen na versão Mobile usando o React Native (Parte Mobile)
 
