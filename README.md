@@ -1,4 +1,8 @@
-# wissen
+# Documentação do Wissen
+
+## Introdução
+
+O projeto Wissen é um sistema integrado que combina a classificação de perfis de aprendizagem e um sistema de recomendação educacional, personalizado para estudantes de Física. A personalização visa aumentar o engajamento e a eficácia no aprendizado, utilizando métodos de machine learning e sistemas inteligentes para entender e adaptar-se aos estilos de aprendizagem dos usuários.
 
 ### Estrutura de Diretórios e Funcionamento
 
@@ -60,8 +64,7 @@
      - Faça `push` para a branch que criou e sempre abra uma Pull Request (PR) para que o código seja revisado antes do merge.
      - Atribua revisores na PR e documente o que foi feito para facilitar a avaliação.
 
-
-### **Documentação do Projeto: Classificação de Perfis de Aprendizagem e Sistema de Recomendação Educacional para Ensino de Física**
+## Parte de Aprendizado de Máquina
 
 ---
 
@@ -131,100 +134,136 @@ Três datasets principais foram criados para suportar o sistema de recomendaçã
 
 ---
 
-### **3.2 Abordagens de Recomendação**
+## 📝 Sobre o Projeto
 
-#### **Filtragem Baseada em Conteúdo**
+#### **3.2.4 Geração de Dados Sintéticos**
 
-Recomenda conteúdos com base no perfil do aluno e na similaridade entre as tags dos conteúdos.
-
-```python
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-
-def recomendar_conteudos_por_conteudo(perfil_aluno):
-    conteudos_filtrados = conteudos_fisica[conteudos_fisica['perfil'] == perfil_aluno]
-    tags_matrix = CountVectorizer().fit_transform(conteudos_filtrados['tags'])
-    similaridades = cosine_similarity(tags_matrix, tags_matrix)
-    recomendacoes = conteudos_filtrados.iloc[similaridades.sum(axis=0).argsort()[::-1]]
-    return recomendacoes[['id', 'titulo']]
-```
+Devido à limitação do dataset real (47 amostras), foram geradas amostras sintéticas utilizando um **GAN** (Generative Adversarial Network) para balancear os dados entre os perfis.
 
 ---
 
-#### **Filtragem Colaborativa**
+## **4. Modelagem de Classificação**
 
-Recomenda conteúdos com base em interações de outros alunos com perfis semelhantes.
+Três modelos principais foram utilizados para classificar os perfis:
 
-```python
-from sklearn.metrics.pairwise import cosine_similarity
+### **4.1 MLP (Multi-Layer Perceptron)**
 
-def recomendar_conteudos_por_colaboracao(aluno_id):
-    matriz_interacao = pd.pivot_table(interacoes, index='aluno_id', columns='conteudo_id', values='rating').fillna(0)
-    similaridade_alunos = cosine_similarity(matriz_interacao)
-    similaridades_aluno = similaridade_alunos[aluno_id - 1]
-    recomendacoes = matriz_interacao.T.dot(similaridades_aluno).sort_values(ascending=False)
-    return recomendacoes.index
-```
+#### Configuração:
 
----
+- **Ativação:** `tanh`
+- **Camadas ocultas:** (100,)
+- **Otimizador:** `adam`
 
-#### **Sistema Híbrido**
+#### Resultados:
 
-Combina os resultados das duas abordagens para gerar recomendações mais completas.
-
-```python
-def sistema_recomendacao_hibrido(aluno_id, perfil_aluno):
-    conteudos_baseado_em_conteudo = recomendar_conteudos_por_conteudo(perfil_aluno)
-    conteudos_colaborativo = recomendar_conteudos_por_colaboracao(aluno_id)
-    recomendacoes_finais = pd.concat([
-        conteudos_fisica[conteudos_fisica['id'].isin(conteudos_baseado_em_conteudo['id'])],
-        conteudos_fisica[conteudos_fisica['id'].isin(conteudos_colaborativo)]
-    ]).drop_duplicates()
-    return recomendacoes_finais[['id', 'titulo']]
-```
+- **Acurácia:** 99,39% com os dados balanceados gerados pelo GAN.
 
 ---
 
-### **3.3 Exemplo de Recomendação**
+### **4.2 DNN (Deep Neural Network)**
 
-Exemplo de execução para um aluno com perfil  **Visual** :
+#### Configuração:
 
-```python
-aluno_id = 1
-perfil_aluno = alunos.loc[alunos['id'] == aluno_id, 'perfil'].values[0]
-recomendacoes = sistema_recomendacao_hibrido(aluno_id, perfil_aluno)
-print(f"Recomendações para o aluno {alunos.loc[alunos['id'] == aluno_id, 'nome'].values[0]}:\n", recomendacoes)
-```
+- **Camadas:**
+  - Input layer: Dimensão do dataset normalizado.
+  - 2 camadas ocultas com 256 e 128 neurônios.
+  - Output layer: Softmax para 4 classes (uma para cada perfil).
+- **Função de perda:** `categorical_crossentropy`
+- **Otimizador:** `adam`
+- **Épocas:** 50
+- **Batch size:** 32
 
-Saída:
+#### Resultados:
 
-```
-Recomendações para o aluno João:
-    id                          título
-0   1         Vídeo: Leis de Newton
-4   4  Simulação: Circuitos Elétricos
-```
+- A DNN apresentou excelente desempenho em detecção de padrões mais complexos nos dados.
 
 ---
 
-## **4. Resultados Esperados**
+### **4.3 ELM (Extreme Learning Machine)**
 
-* **Personalização** : Recomendações alinhadas ao estilo de aprendizagem do aluno.
-* **Aumento de Engajamento** : Alunos mais motivados a explorar conteúdos adaptados.
-* **Facilidade de Expansão** : O sistema pode ser facilmente ajustado para outros tópicos de ensino.
+#### Configuração:
+
+- **Camadas:**
+  - Input layer com número de neurônios igual à dimensão dos dados.
+  - Hidden layer: 500 neurônios com ativação `relu`.
+  - Output layer linear.
+- **Treinamento:** Utiliza solução direta da pseudo-inversa para ajustar os pesos.
+
+#### Resultados:
+
+- Modelo altamente eficiente em termos de tempo de treinamento.
+- Performa bem em datasets médios, especialmente quando balanceados.
 
 ---
 
-## **5. Possibilidades Futuras**
+## **5. Sistema de Recomendação Educacional**
 
-1. **Adição de Gamificação** :
+### **5.1 Estrutura de Dados**
 
-* Adicionar desafios ou premiações com base nos conteúdos consumidos.
+#### Tabelas:
 
-1. **Integração com Redes Neurais** :
+1. **Conteúdos Educacionais**
+   - Informações sobre os conteúdos disponíveis e os perfis aos quais são mais adequados.
+2. **Perfis de Alunos**
+   - Dados dos alunos, incluindo seus perfis de aprendizagem e níveis de conhecimento.
+3. **Interações**
+   - Registros de interação dos alunos com os conteúdos (ex.: avaliações).
 
-* Utilizar redes neurais para melhorar a filtragem colaborativa.
+---
 
-1. **Expansão para Outras Disciplinas** :
+### **5.2 Abordagens de Recomendação**
 
-* Ajustar para diferentes áreas do conhecimento.
+#### **5.2.1 Filtragem Baseada em Conteúdo**
+
+Recomenda conteúdos com base na similaridade entre as tags dos conteúdos e o perfil do aluno.
+
+#### **5.2.2 Filtragem Colaborativa**
+
+Utiliza interações passadas de outros alunos com perfis semelhantes para gerar recomendações.
+
+#### **5.2.3 Sistema Híbrido**
+
+Combina ambas as abordagens para melhorar a diversidade e relevância das recomendações.
+
+---
+
+# Desenvovimento do projeto Wissen na versão Mobile usando o React Native (Parte Mobile)
+
+## 🔧 Pré-requisitos
+
+Certifique-se de ter os seguintes itens instalados em sua máquina:
+
+- Node.js >= 14.17.0
+- npm ou yarn
+
+## 🚀 Instalação
+
+```bash
+# Clone o repositório
+git clone https://github.com/usuario/projeto.git
+
+# Acesse o diretório do projeto
+cd projeto
+
+# Instale as dependências
+npm install
+
+# Ou instale cada umas dependências separadamente
+npm install @react-navigation/native
+npm install @react-navigation/native-stack
+npx expo install react-native-screens react-native-safe-area-context
+npm install @react-navigation/material-top-tabs react-native-tab-view
+npx expo install react-native-pager-view
+npm install styled-components
+
+# Execute o comando abaixo para evitar conflitos de versões do react e react-dom:
+npm install react@18.3.1 react-dom@18.3.1
+```
+
+## ⚙️ Rodando o Projeto
+
+Para rodar o projeto execute o comando:
+
+```
+npx expo start
+```
