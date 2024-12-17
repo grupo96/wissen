@@ -115,20 +115,28 @@ def calcular_perfil(row):
 
 Três datasets principais foram criados para suportar o sistema de recomendação:
 
-1. **Conteúdos Educacionais** :
-   Inclui o título, tags associadas (conceitos ou tipos de conteúdo) e o perfil mais adequado para o conteúdo.| id | título                         | tags                           | perfil       |
-   | -- | ------------------------------- | ------------------------------ | ------------ |
-   | 1  | Vídeo: Leis de Newton          | movimento, forças, animação | Visual       |
-   | 2  | Podcast: História da Gravidade | história, conceitos, áudio   | Auditivo     |
-   | 3  | Experimento: Plano Inclinado    | experimento, prática          | Cinestésico |
-2. **Perfis de Alunos** :
-   Contém o nome do aluno, o perfil de aprendizagem identificado e seu nível de conhecimento.| id | nome  | perfil       | nível         |
-   | -- | ----- | ------------ | -------------- |
-   | 1  | João | Visual       | Iniciante      |
-   | 2  | Maria | Cinestésico | Intermediário |
-3. **Interações** :
-   Registra as interações de cada aluno com os conteúdos.| aluno_id | conteudo_id | rating |
-   | -------- | ----------- | ------ |
+1. **Conteúdos Educacionais**:  
+   Inclui o título, tags associadas (conceitos ou tipos de conteúdo) e o perfil mais adequado para o conteúdo.
+
+   | id  | título                          | tags                            | perfil       |
+   |-----|--------------------------------|---------------------------------|--------------|
+   | 1   | Vídeo: Leis de Newton           | movimento, forças, animação     | Visual       |
+   | 2   | Podcast: História da Gravidade  | história, conceitos, áudio      | Auditivo     |
+   | 3   | Experimento: Plano Inclinado    | experimento, prática            | Cinestésico  |
+
+2. **Perfis de Alunos**:  
+   Contém o nome do aluno, o perfil de aprendizagem identificado e seu nível de conhecimento.
+
+   | id  | nome   | perfil       | nível          |
+   |-----|--------|--------------|----------------|
+   | 1   | João   | Visual       | Iniciante      |
+   | 2   | Maria  | Cinestésico  | Intermediário  |
+
+3. **Interações**:  
+   Registra as interações de cada aluno com os conteúdos.
+
+   | aluno_id | conteudo_id | rating |
+   |----------|-------------|--------|
    | 1        | 1           | 5      |
    | 2        | 3           | 4      |
 
